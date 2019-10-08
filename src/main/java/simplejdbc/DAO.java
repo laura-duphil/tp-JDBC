@@ -80,7 +80,23 @@ public class DAO {
 	 * @throws DAOException
 	 */
 	public int numberOfOrdersForCustomer(int customerId) throws DAOException {
-		throw new UnsupportedOperationException("Pas encore implémenté");
+            int result = 0;
+		String sql = "SELECT COUNT(*) AS NBCMD FROM PURCHASE_ORDER WHERE CUSTOMER_ID = ?";
+		try (Connection connection = myDataSource.getConnection(); // Ouvrir une connexion
+			PreparedStatement stmt = connection.prepareStatement(sql); // prepareStatement : qd on passe un param
+		) {
+                        stmt.setInt(1, customerId);
+                        ResultSet rs = stmt.executeQuery();
+			rs.next(); // Pas la peine de faire while, il y a 1 seul enregistrement
+			// On récupère le champ NUMBER de l'enregistrement courant
+			result = rs.getInt("NBCMD");
+
+		} catch (SQLException ex) {
+			Logger.getLogger("DAO").log(Level.SEVERE, null, ex);
+			throw new DAOException(ex.getMessage());
+		}
+
+		return result;
 	}
 
 	/**
@@ -91,7 +107,23 @@ public class DAO {
 	 * @throws DAOException
 	 */
 	CustomerEntity findCustomer(int customerID) throws DAOException {
-		throw new UnsupportedOperationException("Pas encore implémenté");
+            
+            String sql = "SELECT * FROM customer WHERE CUSTOMER_ID = ?";
+            try (Connection connection = myDataSource.getConnection(); // Ouvrir une connexion
+                    PreparedStatement stmt = connection.prepareStatement(sql); // prepareStatement : qd on passe un param
+            ) {
+                    stmt.setInt(1, customerID);
+                    ResultSet rs = stmt.executeQuery();
+                    rs.next(); // Pas la peine de faire while, il y a 1 seul enregistrement
+                    CustomerEntity result = new CustomerEntity(customerID,"","");
+                    result = rs.getString("name");
+
+            } catch (SQLException ex) {
+                    Logger.getLogger("DAO").log(Level.SEVERE, null, ex);
+                    throw new DAOException(ex.getMessage());
+            }
+
+            return result;
 	}
 
 	/**

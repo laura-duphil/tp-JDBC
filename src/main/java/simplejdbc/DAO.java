@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -127,13 +128,30 @@ public class DAO {
 
 	/**
 	 * Liste des clients localisés dans un état des USA
-	 *
+	 *  ;
 	 * @param state l'état à rechercher (2 caractères)
 	 * @return la liste des clients habitant dans cet état
 	 * @throws DAOException
 	 */
 	List<CustomerEntity> customersInState(String state) throws DAOException {
-		throw new UnsupportedOperationException("Pas encore implémenté");
+            CustomerEntity result;
+            ArrayList<CustomerEntity> liste = new ArrayList<CustomerEntity>();
+            String sql = "SELECT * FROM APP.CUSTOMER where state=?";
+            try (Connection connection = myDataSource.getConnection(); // Ouvrir une connexion
+                    PreparedStatement stmt = connection.prepareStatement(sql) // prepareStatement : qd on passe un param
+                ) {
+                    stmt.setString(1,state);
+                    ResultSet rs = stmt.executeQuery();
+                    while (rs.next()) {
+                        liste.add(new CustomerEntity(rs.getInt("CUSTOMER_ID"),rs.getString("NAME"),rs.getString("ADDRESSLINE1")));
+                    }
+
+            } catch (SQLException ex) {
+                    Logger.getLogger("DAO").log(Level.SEVERE, null, ex);
+                    throw new DAOException(ex.getMessage());
+            }
+
+            return liste;
 	}
 
 }

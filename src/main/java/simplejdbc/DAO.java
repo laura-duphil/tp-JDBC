@@ -107,16 +107,15 @@ public class DAO {
 	 * @throws DAOException
 	 */
 	CustomerEntity findCustomer(int customerID) throws DAOException {
-            
-            String sql = "SELECT * FROM customer WHERE CUSTOMER_ID = ?";
+            CustomerEntity result;
+            String sql = "SELECT NAME, ADDRESSLINE1 FROM customer WHERE CUSTOMER_ID = ?";
             try (Connection connection = myDataSource.getConnection(); // Ouvrir une connexion
                     PreparedStatement stmt = connection.prepareStatement(sql); // prepareStatement : qd on passe un param
             ) {
                     stmt.setInt(1, customerID);
                     ResultSet rs = stmt.executeQuery();
                     rs.next(); // Pas la peine de faire while, il y a 1 seul enregistrement
-                    CustomerEntity result = new CustomerEntity(customerID,"","");
-                    result = rs.getString("name");
+                    result = new CustomerEntity(customerID,rs.getString("NAME"),rs.getString("ADDRESSLINE1"));
 
             } catch (SQLException ex) {
                     Logger.getLogger("DAO").log(Level.SEVERE, null, ex);
